@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 var finalScore = 0;
 var questionNumber = 0;
 var quiz = new AnimalQuiz();
+var fireQuiz;
+var numberOfQuestions = 0;
 
-class AnimalQuiz{
-  var images = [
-    "alligator", "cat", "dog", "owl"
-  ];
-
+class AnimalQuiz {
+  var images = ["alligator", "cat", "dog", "owl"];
 
   var questions = [
     "This animal is a carnivorous reptile.",
@@ -18,7 +17,6 @@ class AnimalQuiz{
     "A nocturnal animal with some really big eyes",
   ];
 
-
   var choices = [
     ["Cat", "Sheep", "Alligator", "Cow"],
     ["Cat", "Snail", "Slug", "Horse"],
@@ -26,13 +24,10 @@ class AnimalQuiz{
     ["Spider", "Snake", "Hawk", "Owl"]
   ];
 
-
-  var correctAnswers = [
-    "Alligator", "Cat", "Dog", "Owl"
-  ];
+  var correctAnswers = ["Alligator", "Cat", "Dog", "Owl"];
 }
 
-class Quiz1 extends StatefulWidget{
+class Quiz1 extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return new Quiz1State();
@@ -40,183 +35,181 @@ class Quiz1 extends StatefulWidget{
 }
 
 class Quiz1State extends State<Quiz1> {
+
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
         onWillPop: () async => false,
         child: Scaffold(
+            body: StreamBuilder(
+                stream: Firestore.instance.collection('questions').snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return const Text('Loading...');
+                  else {
+                    fireQuiz = snapshot.data.documents[questionNumber];
+                    numberOfQuestions = snapshot.data.documents.length;
+                    return new Container(
+                      margin: const EdgeInsets.all(10.0),
+                      alignment: Alignment.topCenter,
+                      child: new Column(
+                        children: <Widget>[
+                          new Padding(padding: EdgeInsets.all(20.0)),
 
-          body: new Container(
-            margin: const EdgeInsets.all(10.0),
-            alignment: Alignment.topCenter,
-            child: new Column(
-              children: <Widget>[
-                new Padding(padding: EdgeInsets.all(20.0)),
+                          new Container(
+                            alignment: Alignment.centerRight,
+                            child: new Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                new Text(
+                                  "Question ${questionNumber + 1} of ${snapshot
+                                      .data.documents.length}",
+                                  style: new TextStyle(fontSize: 22.0),
+                                ),
+                                new Text(
+                                  "Score: $finalScore",
+                                  style: new TextStyle(fontSize: 22.0),
+                                )
+                              ],
+                            ),
+                          ),
 
-                new Container(
-                  alignment: Alignment.centerRight,
-                  child: new Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
+                          //image
+                          new Padding(padding: EdgeInsets.all(10.0)),
 
-                      new Text("Question ${questionNumber + 1} of ${quiz.questions.length}",
-                        style: new TextStyle(
-                            fontSize: 22.0
-                        ),),
+                          new Image.asset(
+                            "images/${quiz.images[questionNumber]}.jpg",
+                          ),
 
-                      new Text("Score: $finalScore",
-                        style: new TextStyle(
-                            fontSize: 22.0
-                        ),)
-                    ],
-                  ),
-                ),
+                          new Padding(padding: EdgeInsets.all(10.0)),
 
+                          new Text(
+                            fireQuiz['questions'],
+                            //quiz.questions[questionNumber],
+                            style: new TextStyle(
+                              fontSize: 20.0,
+                            ),
+                          ),
 
-                //image
-                new Padding(padding: EdgeInsets.all(10.0)),
+                          new Padding(padding: EdgeInsets.all(10.0)),
 
-                new Image.asset(
-                  "images/${quiz.images[questionNumber]}.jpg",
-                ),
+                          new Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              //button 1
+                              new MaterialButton(
+                                minWidth: 120.0,
+                                color: Colors.blueGrey,
+                                onPressed: () {
+                                  if (quiz.choices[questionNumber][0] ==
+                                      quiz.correctAnswers[questionNumber]) {
+                                    debugPrint("Correct");
+                                    finalScore++;
+                                  } else {
+                                    debugPrint("Wrong");
+                                  }
+                                  updateQuestion();
+                                },
+                                child: new Text(
+                                  quiz.choices[questionNumber][0],
+                                  style: new TextStyle(
+                                      fontSize: 20.0, color: Colors.white),
+                                ),
+                              ),
 
-                new Padding(padding: EdgeInsets.all(10.0)),
+                              //button 2
+                              new MaterialButton(
+                                minWidth: 120.0,
+                                color: Colors.blueGrey,
+                                onPressed: () {
+                                  if (quiz.choices[questionNumber][1] ==
+                                      quiz.correctAnswers[questionNumber]) {
+                                    debugPrint("Correct");
+                                    finalScore++;
+                                  } else {
+                                    debugPrint("Wrong");
+                                  }
+                                  updateQuestion();
+                                },
+                                child: new Text(
+                                  quiz.choices[questionNumber][1],
+                                  style: new TextStyle(
+                                      fontSize: 20.0, color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
 
-                new Text(quiz.questions[questionNumber],
-                  style: new TextStyle(
-                    fontSize: 20.0,
-                  ),),
+                          new Padding(padding: EdgeInsets.all(10.0)),
 
-                new Padding(padding: EdgeInsets.all(10.0)),
+                          new Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              //button 3
+                              new MaterialButton(
+                                minWidth: 120.0,
+                                color: Colors.blueGrey,
+                                onPressed: () {
+                                  if (quiz.choices[questionNumber][2] ==
+                                      quiz.correctAnswers[questionNumber]) {
+                                    debugPrint("Correct");
+                                    finalScore++;
+                                  } else {
+                                    debugPrint("Wrong");
+                                  }
+                                  updateQuestion();
+                                },
+                                child: new Text(
+                                  quiz.choices[questionNumber][2],
+                                  style: new TextStyle(
+                                      fontSize: 20.0, color: Colors.white),
+                                ),
+                              ),
 
-                new Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
+                              //button 4
+                              new MaterialButton(
+                                minWidth: 120.0,
+                                color: Colors.blueGrey,
+                                onPressed: () {
+                                  if (quiz.choices[questionNumber][3] ==
+                                      quiz.correctAnswers[questionNumber]) {
+                                    debugPrint("Correct");
+                                    finalScore++;
+                                  } else {
+                                    debugPrint("Wrong");
+                                  }
+                                  updateQuestion();
+                                },
+                                child: new Text(
+                                  quiz.choices[questionNumber][3],
+                                  style: new TextStyle(
+                                      fontSize: 20.0, color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
 
-                    //button 1
-                    new MaterialButton(
-                      minWidth: 120.0,
-                      color: Colors.blueGrey,
-                      onPressed: (){
-                        if(quiz.choices[questionNumber][0] == quiz.correctAnswers[questionNumber]){
-                          debugPrint("Correct");
-                          finalScore++;
-                        }else{
-                          debugPrint("Wrong");
-                        }
-                        updateQuestion();
-                      },
-                      child: new Text(quiz.choices[questionNumber][0],
-                        style: new TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white
-                        ),),
-                    ),
+                          new Padding(padding: EdgeInsets.all(15.0)),
 
-                    //button 2
-                    new MaterialButton(
-                      minWidth: 120.0,
-                      color: Colors.blueGrey,
-                      onPressed: (){
-
-                        if(quiz.choices[questionNumber][1] == quiz.correctAnswers[questionNumber]){
-                          debugPrint("Correct");
-                          finalScore++;
-                        }else{
-                          debugPrint("Wrong");
-                        }
-                        updateQuestion();
-                      },
-                      child: new Text(quiz.choices[questionNumber][1],
-                        style: new TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white
-                        ),),
-                    ),
-
-                  ],
-                ),
-
-                new Padding(padding: EdgeInsets.all(10.0)),
-
-                new Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-
-                    //button 3
-                    new MaterialButton(
-                      minWidth: 120.0,
-                      color: Colors.blueGrey,
-                      onPressed: (){
-
-                        if(quiz.choices[questionNumber][2] == quiz.correctAnswers[questionNumber]){
-                          debugPrint("Correct");
-                          finalScore++;
-                        }else{
-                          debugPrint("Wrong");
-                        }
-                        updateQuestion();
-                      },
-                      child: new Text(quiz.choices[questionNumber][2],
-                        style: new TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white
-                        ),),
-                    ),
-
-                    //button 4
-                    new MaterialButton(
-                      minWidth: 120.0,
-                      color: Colors.blueGrey,
-                      onPressed: (){
-
-                        if(quiz.choices[questionNumber][3] == quiz.correctAnswers[questionNumber]){
-                          debugPrint("Correct");
-                          finalScore++;
-                        }else{
-                          debugPrint("Wrong");
-                        }
-                        updateQuestion();
-                      },
-                      child: new Text(quiz.choices[questionNumber][3],
-                        style: new TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white
-                        ),),
-                    ),
-
-                  ],
-                ),
-
-                new Padding(padding: EdgeInsets.all(15.0)),
-
-                new Container(
-                    alignment: Alignment.bottomCenter,
-                    child:  new MaterialButton(
-                        minWidth: 240.0,
-                        height: 30.0,
-                        color: Colors.red,
-                        onPressed: resetQuiz,
-                        child: new Text("Quit",
-                          style: new TextStyle(
-                              fontSize: 18.0,
-                              color: Colors.white
-                          ),)
-                    )
-                ),
-
-
-
-
-              ],
-            ),
-          ),
-
-        )
-    );
+                          new Container(
+                              alignment: Alignment.bottomCenter,
+                              child: new MaterialButton(
+                                  minWidth: 240.0,
+                                  height: 30.0,
+                                  color: Colors.red,
+                                  onPressed: resetQuiz,
+                                  child: new Text(
+                                    "Quit",
+                                    style: new TextStyle(
+                                        fontSize: 18.0, color: Colors.white),
+                                  ))),
+                        ],
+                      ),
+                    );
+                  }
+                })));
   }
 
-  void resetQuiz(){
+  void resetQuiz() {
     setState(() {
       Navigator.pop(context);
       finalScore = 0;
@@ -224,23 +217,27 @@ class Quiz1State extends State<Quiz1> {
     });
   }
 
-
-
-  void updateQuestion(){
+  void updateQuestion() {
     setState(() {
-      if(questionNumber == quiz.questions.length - 1){
-        Navigator.push(context, new MaterialPageRoute(builder: (context)=> new Summary(score: finalScore,)));
-
-      }else{
+      debugPrint("questionNumber: $questionNumber");
+      debugPrint("numberOfQuestions: $numberOfQuestions");
+      if (questionNumber == numberOfQuestions -1) {
+        Navigator.push(
+            context,
+            new MaterialPageRoute(
+                builder: (context) => new Summary(
+                      score: finalScore,
+                    )));
+      } else {
         questionNumber++;
       }
     });
   }
 }
 
-
-class Summary extends StatelessWidget{
+class Summary extends StatelessWidget {
   final int score;
+
   Summary({Key key, @required this.score}) : super(key: key);
 
   @override
@@ -248,40 +245,31 @@ class Summary extends StatelessWidget{
     return new WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-
         body: new Container(
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-
-              new Text("Final Score: $score",
-                style: new TextStyle(
-                    fontSize: 35.0
-                ),),
-
+              new Text(
+                "Final Score: $score",
+                style: new TextStyle(fontSize: 35.0),
+              ),
               new Padding(padding: EdgeInsets.all(30.0)),
-
               new MaterialButton(
                 color: Colors.red,
-                onPressed: (){
+                onPressed: () {
                   questionNumber = 0;
                   finalScore = 0;
                   Navigator.pop(context);
                 },
-                child: new Text("Reset Quiz",
-                  style: new TextStyle(
-                      fontSize: 20.0,
-                      color: Colors.white
-                  ),),)
-
+                child: new Text(
+                  "Reset Quiz",
+                  style: new TextStyle(fontSize: 20.0, color: Colors.white),
+                ),
+              )
             ],
           ),
         ),
-
-
       ),
     );
   }
-
-
 }
