@@ -9,22 +9,6 @@ var numberOfQuestions = 0;
 
 class AnimalQuiz {
   var images = ["alligator", "cat", "dog", "owl"];
-
-  var questions = [
-    "This animal is a carnivorous reptile.",
-    "_________ like to chase mice and birds.",
-    "Give a _________ a bone and he will find his way home",
-    "A nocturnal animal with some really big eyes",
-  ];
-
-  var choices = [
-    ["Cat", "Sheep", "Alligator", "Cow"],
-    ["Cat", "Snail", "Slug", "Horse"],
-    ["Mouse", "Dog", "Elephant", "Donkey"],
-    ["Spider", "Snake", "Hawk", "Owl"]
-  ];
-
-  var correctAnswers = ["Alligator", "Cat", "Dog", "Owl"];
 }
 
 class Quiz1 extends StatefulWidget {
@@ -35,7 +19,6 @@ class Quiz1 extends StatefulWidget {
 }
 
 class Quiz1State extends State<Quiz1> {
-
   @override
   Widget build(BuildContext context) {
     return new WillPopScope(
@@ -44,7 +27,8 @@ class Quiz1State extends State<Quiz1> {
             body: StreamBuilder(
                 stream: Firestore.instance.collection('questions').snapshots(),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const Text('Loading...');
+                  if (!snapshot.hasData)
+                    return const Text('Loading...');
                   else {
                     fireQuiz = snapshot.data.documents[questionNumber];
                     numberOfQuestions = snapshot.data.documents.length;
@@ -61,8 +45,8 @@ class Quiz1State extends State<Quiz1> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
                                 new Text(
-                                  "Question ${questionNumber + 1} of ${snapshot
-                                      .data.documents.length}",
+                                  "Question ${questionNumber +
+                                      1} of $numberOfQuestions",
                                   style: new TextStyle(fontSize: 22.0),
                                 ),
                                 new Text(
@@ -100,8 +84,8 @@ class Quiz1State extends State<Quiz1> {
                                 minWidth: 120.0,
                                 color: Colors.blueGrey,
                                 onPressed: () {
-                                  if (quiz.choices[questionNumber][0] ==
-                                      quiz.correctAnswers[questionNumber]) {
+                                  if (fireQuiz['choices'][0] ==
+                                      fireQuiz['correctAnswers']) {
                                     debugPrint("Correct");
                                     finalScore++;
                                   } else {
@@ -110,7 +94,7 @@ class Quiz1State extends State<Quiz1> {
                                   updateQuestion();
                                 },
                                 child: new Text(
-                                  quiz.choices[questionNumber][0],
+                                  fireQuiz['choices'][0],
                                   style: new TextStyle(
                                       fontSize: 20.0, color: Colors.white),
                                 ),
@@ -121,8 +105,8 @@ class Quiz1State extends State<Quiz1> {
                                 minWidth: 120.0,
                                 color: Colors.blueGrey,
                                 onPressed: () {
-                                  if (quiz.choices[questionNumber][1] ==
-                                      quiz.correctAnswers[questionNumber]) {
+                                  if (fireQuiz['choices'][1] ==
+                                      fireQuiz['correctAnswers']) {
                                     debugPrint("Correct");
                                     finalScore++;
                                   } else {
@@ -131,7 +115,7 @@ class Quiz1State extends State<Quiz1> {
                                   updateQuestion();
                                 },
                                 child: new Text(
-                                  quiz.choices[questionNumber][1],
+                                  fireQuiz['choices'][1],
                                   style: new TextStyle(
                                       fontSize: 20.0, color: Colors.white),
                                 ),
@@ -149,8 +133,8 @@ class Quiz1State extends State<Quiz1> {
                                 minWidth: 120.0,
                                 color: Colors.blueGrey,
                                 onPressed: () {
-                                  if (quiz.choices[questionNumber][2] ==
-                                      quiz.correctAnswers[questionNumber]) {
+                                  if (fireQuiz['choices'][2] ==
+                                      fireQuiz['correctAnswers']) {
                                     debugPrint("Correct");
                                     finalScore++;
                                   } else {
@@ -159,7 +143,7 @@ class Quiz1State extends State<Quiz1> {
                                   updateQuestion();
                                 },
                                 child: new Text(
-                                  quiz.choices[questionNumber][2],
+                                  fireQuiz['choices'][2],
                                   style: new TextStyle(
                                       fontSize: 20.0, color: Colors.white),
                                 ),
@@ -170,8 +154,8 @@ class Quiz1State extends State<Quiz1> {
                                 minWidth: 120.0,
                                 color: Colors.blueGrey,
                                 onPressed: () {
-                                  if (quiz.choices[questionNumber][3] ==
-                                      quiz.correctAnswers[questionNumber]) {
+                                  if (fireQuiz['choices'][3] ==
+                                      fireQuiz['correctAnswers']) {
                                     debugPrint("Correct");
                                     finalScore++;
                                   } else {
@@ -180,7 +164,7 @@ class Quiz1State extends State<Quiz1> {
                                   updateQuestion();
                                 },
                                 child: new Text(
-                                  quiz.choices[questionNumber][3],
+                                  fireQuiz['choices'][3],
                                   style: new TextStyle(
                                       fontSize: 20.0, color: Colors.white),
                                 ),
@@ -221,7 +205,7 @@ class Quiz1State extends State<Quiz1> {
     setState(() {
       debugPrint("questionNumber: $questionNumber");
       debugPrint("numberOfQuestions: $numberOfQuestions");
-      if (questionNumber == numberOfQuestions -1) {
+      if (questionNumber == numberOfQuestions - 1) {
         Navigator.push(
             context,
             new MaterialPageRoute(
@@ -246,6 +230,7 @@ class Summary extends StatelessWidget {
       onWillPop: () async => false,
       child: Scaffold(
         body: new Container(
+          alignment: Alignment.center,
           child: new Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
